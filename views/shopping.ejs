@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
   <style>
     .btn-custom {
       background-color: #ffcc33; /* Yellow button color */
@@ -76,6 +78,53 @@
       margin-right: 5px;
       margin-bottom: 5px;
     }
+    
+    /* Chart container styles */
+    .chart-section {
+      margin: 40px 0;
+    }
+    .chart-container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      margin-bottom: 30px;
+    }
+    .chart-container h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.5rem;
+    }
+    .chart-controls {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .reset-zoom-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+    .reset-zoom-btn:hover {
+      background-color: #0056b3;
+    }
+    .charts-wrapper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    @media (min-width: 992px) {
+      .charts-wrapper.dual-charts {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
   </style>
   <title>Supermarket App</title>
 </head>
@@ -106,6 +155,19 @@
             <li class="nav-item">
               <a class="nav-link" href="/chart">Compare Trends</a>
             </li>
+
+            <!-- Users Dropdown (Admin Only) -->
+            <% if (user.role === "admin") { %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
+                  Users
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/users">Manage Users</a></li>
+                  <li><a class="dropdown-item" href="/users/add">Add User</a></li>
+                </ul>
+              </li>
+            <% } %>
             
             <!-- Account Dropdown -->
             <li class="nav-item dropdown">
@@ -125,6 +187,74 @@
     <br>
     <div class="text-center"><h2><%= category %></h2></div>
     <br>
+    
+    <!-- Charts Section -->
+    <div class="chart-section">
+      <% if (category === 'All Investment Types') { %>
+        <div class="charts-wrapper dual-charts">
+          <!-- Stock Multiline Chart -->
+          <div class="chart-container">
+            <h3>All Stocks Comparison</h3>
+            <div class="chart-controls">
+              <button class="reset-zoom-btn" onclick="resetStockZoom()">Reset Zoom</button>
+              <button class="reset-zoom-btn" onclick="panChart('up', 50)">↑</button>
+              <button class="reset-zoom-btn" onclick="panChart('down', 50)">↓</button>
+              <button class="reset-zoom-btn" onclick="panChart('left', 50)">←</button>
+              <button class="reset-zoom-btn" onclick="panChart('right', 50)">→</button>
+              <br><small style="color: #666;">Wheel: zoom | Shift+drag: pan | Keys: ↑↓←→</small>
+            </div>
+            <canvas id="stockMultilineChart"></canvas>
+          </div>
+          
+          <!-- Crypto Multiline Chart -->
+          <div class="chart-container">
+            <h3>All Crypto Comparison</h3>
+            <div class="chart-controls">
+              <button class="reset-zoom-btn" onclick="resetCryptoZoom()">Reset Zoom</button>
+              <button class="reset-zoom-btn" onclick="panChart('up', 50)">↑</button>
+              <button class="reset-zoom-btn" onclick="panChart('down', 50)">↓</button>
+              <button class="reset-zoom-btn" onclick="panChart('left', 50)">←</button>
+              <button class="reset-zoom-btn" onclick="panChart('right', 50)">→</button>
+              <br><small style="color: #666;">Wheel: zoom | Shift+drag: pan | Keys: ↑↓←→</small>
+            </div>
+            <canvas id="cryptoMultilineChart"></canvas>
+          </div>
+        </div>
+      <% } else if (category === 'Stocks') { %>
+        <div class="charts-wrapper">
+          <!-- Stock Multiline Chart -->
+          <div class="chart-container">
+            <h3>All Stocks Comparison</h3>
+            <div class="chart-controls">
+              <button class="reset-zoom-btn" onclick="resetStockZoom()">Reset Zoom</button>
+              <button class="reset-zoom-btn" onclick="panChart('up', 50)">↑</button>
+              <button class="reset-zoom-btn" onclick="panChart('down', 50)">↓</button>
+              <button class="reset-zoom-btn" onclick="panChart('left', 50)">←</button>
+              <button class="reset-zoom-btn" onclick="panChart('right', 50)">→</button>
+              <br><small style="color: #666;">Wheel: zoom | Shift+drag: pan | Keys: ↑↓←→</small>
+            </div>
+            <canvas id="stockMultilineChart"></canvas>
+          </div>
+        </div>
+      <% } else if (category === 'Crypto') { %>
+        <div class="charts-wrapper">
+          <!-- Crypto Multiline Chart -->
+          <div class="chart-container">
+            <h3>All Crypto Comparison</h3>
+            <div class="chart-controls">
+              <button class="reset-zoom-btn" onclick="resetCryptoZoom()">Reset Zoom</button>
+              <button class="reset-zoom-btn" onclick="panChart('up', 50)">↑</button>
+              <button class="reset-zoom-btn" onclick="panChart('down', 50)">↓</button>
+              <button class="reset-zoom-btn" onclick="panChart('left', 50)">←</button>
+              <button class="reset-zoom-btn" onclick="panChart('right', 50)">→</button>
+              <br><small style="color: #666;">Wheel: zoom | Shift+drag: pan | Keys: ↑↓←→</small>
+            </div>
+            <canvas id="cryptoMultilineChart"></canvas>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    
     <div class="row">
       <div class="col-12">
         <% for(let i=0; i < trends.length; i++) { %>
@@ -145,5 +275,439 @@
       </div>
     </div>
   </div>
+
+  <!-- Multiline Charts JavaScript -->
+  <script>
+    // Register the zoom plugin
+    Chart.register(ChartZoom);
+    
+    // ===== MULTILINE CHART ELEMENTS AND FUNCTIONS =====
+    const stockMultilineCtx = document.getElementById('stockMultilineChart');
+    const cryptoMultilineCtx = document.getElementById('cryptoMultilineChart');
+    let stockMultilineChart;
+    let cryptoMultilineChart;
+    
+    // Store original chart bounds for proper reset
+    let originalStockBounds = null;
+    let originalCryptoBounds = null;
+
+    // Stock colors for different lines
+    const stockColors = {
+        Nvidia: '#76C893',
+        Tesla: '#F72585',
+        Apple: '#4C956C',
+        DBS: '#2F9AA0',
+        Grab: '#F77F00'
+    };
+
+    // Crypto colors for different lines
+    const cryptoColors = {
+        Bitcoin: '#F7931A',
+        Ethereum: '#627EEA',
+        Solana: '#9945FF',
+        Ripple: '#23292F',
+        Cardano: '#0033AD'
+    };
+
+    function fetchAndCreateStockMultilineChart() {
+        console.log('=== Fetching multiline stock data ===');
+        
+        fetch('/api/multiline-stock-data')
+        .then(response => {
+            console.log('Stock multiline API Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Stock multiline data received:', data.length, 'rows');
+            if (!data || data.length === 0) {
+                console.warn('No stock multiline data returned from API');
+                return;
+            }
+            
+            if (stockMultilineChart) {
+                console.log('Destroying existing stock multiline chart');
+                stockMultilineChart.destroy();
+            }
+            
+            createStockMultilineChart(data);
+        })
+        .catch(error => console.error('Error fetching stock multiline data:', error));
+    }
+
+    function createStockMultilineChart(chartData) {
+        console.log('Creating stock multiline chart with data:', chartData.length, 'points');
+        
+        const stockNames = ['Nvidia', 'Tesla', 'Apple', 'DBS', 'Grab'];
+        const datasets = stockNames.map(stockName => {
+            return {
+                label: stockName,
+                data: chartData.map(row => parseFloat(row[stockName]) || 0),
+                borderColor: stockColors[stockName],
+                backgroundColor: stockColors[stockName] + '20',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            };
+        });
+        
+        stockMultilineChart = new Chart(stockMultilineCtx, {
+            type: 'line',
+            data: {
+                labels: chartData.map(row => row.Time ? row.Time.toString() : 'N/A'),
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { 
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const stockName = context.dataset.label;
+                                return `${stockName}: $${context.parsed.y.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: { display: true, text: 'Stock Price ($)' },
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return '$' + value.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        }
+                    },
+                    x: {
+                        title: { display: true, text: 'Time' }
+                    }
+                }
+            }
+        });
+        console.log('Stock multiline chart created successfully');
+        
+        // Store original bounds after chart is fully rendered
+        setTimeout(() => {
+            if (stockMultilineChart && stockMultilineChart.scales) {
+                originalStockBounds = {
+                    xMin: stockMultilineChart.scales.x.min,
+                    xMax: stockMultilineChart.scales.x.max,
+                    yMin: stockMultilineChart.scales.y.min,
+                    yMax: stockMultilineChart.scales.y.max
+                };
+                console.log('Stored original stock bounds:', originalStockBounds);
+            }
+        }, 200);
+    }
+
+    function fetchAndCreateCryptoMultilineChart() {
+        console.log('=== Fetching multiline crypto data ===');
+        
+        fetch('/api/multiline-crypto-data')
+        .then(response => {
+            console.log('Crypto multiline API Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Crypto multiline data received:', data.length, 'rows');
+            if (!data || data.length === 0) {
+                console.warn('No crypto multiline data returned from API');
+                return;
+            }
+            
+            if (cryptoMultilineChart) {
+                console.log('Destroying existing crypto multiline chart');
+                cryptoMultilineChart.destroy();
+            }
+            
+            createCryptoMultilineChart(data);
+        })
+        .catch(error => console.error('Error fetching crypto multiline data:', error));
+    }
+
+    function createCryptoMultilineChart(chartData) {
+        console.log('Creating crypto multiline chart with data:', chartData.length, 'points');
+        
+        const cryptoNames = ['Bitcoin', 'Ethereum', 'Solana', 'Ripple', 'Cardano'];
+        const datasets = cryptoNames.map(cryptoName => {
+            const values = chartData.map(row => parseFloat(row[cryptoName]) || 0);
+            
+            return {
+                label: cryptoName,
+                data: values,
+                borderColor: cryptoColors[cryptoName],
+                backgroundColor: cryptoColors[cryptoName] + '20',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            };
+        });
+        
+        cryptoMultilineChart = new Chart(cryptoMultilineCtx, {
+            type: 'line',
+            data: {
+                labels: chartData.map(row => row.Time ? row.Time.toString() : 'N/A'),
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { 
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const cryptoName = context.dataset.label;
+                                return `${cryptoName}: $${context.parsed.y.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: { display: true, text: 'Crypto Price ($)' },
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return '$' + value.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        }
+                    },
+                    x: {
+                        title: { display: true, text: 'Time' }
+                    }
+                },
+                plugins: {
+                    zoom: {
+                        pan: {
+                            enabled: true,
+                            mode: 'xy',
+                            modifierKey: 'shift'
+                        },
+                        zoom: {
+                            wheel: {
+                                enabled: true,
+                                speed: 0.1
+                            },
+                            pinch: {
+                                enabled: true
+                            },
+                            mode: 'xy'
+                        },
+                        limits: {
+                            y: {min: 'original', max: 'original'},
+                            x: {min: 'original', max: 'original'}
+                        }
+                    }
+                }
+            }
+        });
+        console.log('Crypto multiline chart created successfully');
+        
+        // Store original bounds after chart is fully rendered
+        setTimeout(() => {
+            if (cryptoMultilineChart && cryptoMultilineChart.scales) {
+                originalCryptoBounds = {
+                    xMin: cryptoMultilineChart.scales.x.min,
+                    xMax: cryptoMultilineChart.scales.x.max,
+                    yMin: cryptoMultilineChart.scales.y.min,
+                    yMax: cryptoMultilineChart.scales.y.max
+                };
+                console.log('Stored original crypto bounds:', originalCryptoBounds);
+            }
+        }, 200);
+    }
+
+    // Initialize multiline charts based on what's available
+    document.addEventListener('DOMContentLoaded', function() {
+        if (stockMultilineCtx) {
+            fetchAndCreateStockMultilineChart();
+        }
+
+        if (cryptoMultilineCtx) {
+            fetchAndCreateCryptoMultilineChart();
+        }
+        
+        // Add keyboard navigation for chart scrolling
+        document.addEventListener('keydown', function(e) {
+            const panAmount = 50; // Pixels to pan
+            
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                return; // Don't interfere with input fields
+            }
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    panChart('up', panAmount);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    panChart('down', panAmount);
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    panChart('left', panAmount);
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    panChart('right', panAmount);
+                    break;
+            }
+        });
+    });
+
+    // Pan chart function - fixed for X-axis time data
+    function panChart(direction, amount) {
+        console.log(`Attempting to pan ${direction}`);
+        
+        const charts = [];
+        if (stockMultilineChart && stockMultilineChart.canvas && stockMultilineChart.canvas.offsetParent !== null) {
+            charts.push(stockMultilineChart);
+        }
+        if (cryptoMultilineChart && cryptoMultilineChart.canvas && cryptoMultilineChart.canvas.offsetParent !== null) {
+            charts.push(cryptoMultilineChart);
+        }
+        
+        console.log(`Found ${charts.length} active charts`);
+        
+        charts.forEach(chart => {
+            try {
+                const xScale = chart.scales.x;
+                const yScale = chart.scales.y;
+                
+                if (direction === 'up') {
+                    const range = yScale.max - yScale.min;
+                    const panAmount = range * 0.15; // 15% of visible range
+                    yScale.options.min = yScale.min + panAmount;
+                    yScale.options.max = yScale.max + panAmount;
+                } else if (direction === 'down') {
+                    const range = yScale.max - yScale.min;
+                    const panAmount = range * 0.15;
+                    yScale.options.min = yScale.min - panAmount;
+                    yScale.options.max = yScale.max - panAmount;
+                } else if (direction === 'left' || direction === 'right') {
+                    // For X-axis with categorical data, we need to work with data indices
+                    const labels = chart.data.labels;
+                    const totalLabels = labels.length;
+                    
+                    if (totalLabels > 1) {
+                        // Calculate current visible range in terms of data indices
+                        let currentMin = 0;
+                        let currentMax = totalLabels - 1;
+                        
+                        // If scale has been modified, try to get current bounds
+                        if (xScale.min !== undefined && xScale.max !== undefined) {
+                            // Find indices closest to current min/max
+                            currentMin = Math.max(0, Math.floor(xScale.min));
+                            currentMax = Math.min(totalLabels - 1, Math.ceil(xScale.max));
+                        }
+                        
+                        const visibleRange = currentMax - currentMin;
+                        const panStep = Math.max(1, Math.floor(visibleRange * 0.15)); // 15% of visible range
+                        
+                        if (direction === 'left') {
+                            const newMin = Math.max(0, currentMin - panStep);
+                            const newMax = Math.max(visibleRange, newMin + visibleRange);
+                            xScale.options.min = newMin;
+                            xScale.options.max = Math.min(totalLabels - 1, newMax);
+                        } else if (direction === 'right') {
+                            const newMax = Math.min(totalLabels - 1, currentMax + panStep);
+                            const newMin = Math.max(0, newMax - visibleRange);
+                            xScale.options.min = newMin;
+                            xScale.options.max = newMax;
+                        }
+                        
+                        console.log(`X-axis pan: ${direction}, range: ${currentMin}-${currentMax} -> ${xScale.options.min}-${xScale.options.max}`);
+                    }
+                }
+                
+                chart.update('none');
+                console.log(`Successfully panned ${direction} for chart:`, chart.canvas.id);
+            } catch (error) {
+                console.error('Error panning chart:', error);
+            }
+        });
+    }
+
+    // Reset zoom functions - properly restore original bounds
+    function resetStockZoom() {
+        if (stockMultilineChart) {
+            console.log('Resetting stock zoom to original bounds:', originalStockBounds);
+            
+            // Clear any manual scale modifications
+            delete stockMultilineChart.scales.x.options.min;
+            delete stockMultilineChart.scales.x.options.max;
+            delete stockMultilineChart.scales.y.options.min;
+            delete stockMultilineChart.scales.y.options.max;
+            
+            // Use the zoom plugin's reset function
+            stockMultilineChart.resetZoom();
+            
+            // If that doesn't work, manually restore bounds
+            if (originalStockBounds) {
+                setTimeout(() => {
+                    stockMultilineChart.scales.x.options.min = originalStockBounds.xMin;
+                    stockMultilineChart.scales.x.options.max = originalStockBounds.xMax;
+                    stockMultilineChart.scales.y.options.min = originalStockBounds.yMin;
+                    stockMultilineChart.scales.y.options.max = originalStockBounds.yMax;
+                    stockMultilineChart.update('none');
+                }, 50);
+            }
+        }
+    }
+
+    function resetCryptoZoom() {
+        if (cryptoMultilineChart) {
+            console.log('Resetting crypto zoom to original bounds:', originalCryptoBounds);
+            
+            // Clear any manual scale modifications
+            delete cryptoMultilineChart.scales.x.options.min;
+            delete cryptoMultilineChart.scales.x.options.max;
+            delete cryptoMultilineChart.scales.y.options.min;
+            delete cryptoMultilineChart.scales.y.options.max;
+            
+            // Use the zoom plugin's reset function
+            cryptoMultilineChart.resetZoom();
+            
+            // If that doesn't work, manually restore bounds
+            if (originalCryptoBounds) {
+                setTimeout(() => {
+                    cryptoMultilineChart.scales.x.options.min = originalCryptoBounds.xMin;
+                    cryptoMultilineChart.scales.x.options.max = originalCryptoBounds.xMax;
+                    cryptoMultilineChart.scales.y.options.min = originalCryptoBounds.yMin;
+                    cryptoMultilineChart.scales.y.options.max = originalCryptoBounds.yMax;
+                    cryptoMultilineChart.update('none');
+                }, 50);
+            }
+        }
+    }
+  </script>
 </body>
 </html>

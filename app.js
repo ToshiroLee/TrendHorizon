@@ -219,8 +219,54 @@ app.get('/api/crypto-data', checkAuthenticated, (req, res) => {
     });
 });
 
+// API route for multiline stock data
+app.get('/api/multiline-stock-data', checkAuthenticated, (req, res) => {
+    console.log('Multiline stock API called');
+    
+    const query = 'SELECT Time, Nvidia, Tesla, Apple, DBS, Grab FROM stock ORDER BY Time ASC';
+    console.log('Executing multiline stock query:', query);
+    
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Multiline stock query error:', error);
+            return res.status(500).json({ error: error.message });
+        }
+        console.log('Multiline stock query results:', results.length, 'rows');
+        res.json(results);
+    });
+});
 
-
+// API route for multiline crypto data
+app.get('/api/multiline-crypto-data', checkAuthenticated, (req, res) => {
+    console.log('Multiline crypto API called');
+    
+    const query = 'SELECT Time, Bitcoin, Ethereum, Solana, Ripple, Cardano FROM crypto_prices ORDER BY Time ASC';
+    console.log('Executing multiline crypto query:', query);
+    
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Multiline crypto query error:', error);
+            return res.status(500).json({ error: error.message });
+        }
+        console.log('Multiline crypto query results:', results.length, 'rows');
+        
+        // Clean up the data to ensure numeric values
+        const cleanedResults = results.map(row => {
+            const cleanedRow = { Time: row.Time };
+            ['Bitcoin', 'Ethereum', 'Solana', 'Ripple', 'Cardano'].forEach(crypto => {
+                let value = row[crypto];
+                if (typeof value === 'string') {
+                    value = value.replace(/[$\s,]/g, '');
+                }
+                cleanedRow[crypto] = parseFloat(value) || 0;
+            });
+            return cleanedRow;
+        });
+        
+        console.log('Sending cleaned multiline crypto results:', cleanedResults.length, 'rows');
+        res.json(cleanedResults);
+    });
+});
 
 // Route to generate sales report
 app.get('/generate-sales-report', checkAuthenticated, checkAdmin, (req, res) => {

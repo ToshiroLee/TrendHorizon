@@ -139,7 +139,10 @@ app.post('/users/add', checkAuthenticated, checkAdmin, userController.addUser);
 app.get('/editUser/:id', checkAuthenticated, checkAdmin, userController.showEditUserForm);
 app.post('/editUser/:id', checkAuthenticated, checkAdmin, userController.updateUser);
 app.post('/deleteUser/:id', checkAuthenticated, checkAdmin, userController.deleteUser);
-
+// System health monitoring routes (Admin only)
+app.get('/system-health', checkAuthenticated, checkAdmin, systemController.getSystemHealth);
+app.get('/api/system/health', checkAuthenticated, checkAdmin, systemController.getSystemHealthAPI);
+app.post('/api/system/clear-errors', checkAuthenticated, checkAdmin, systemController.clearErrorLog);
 // API route for chart data (accessible to authenticated users)
 app.get('/api/chart-data', checkAuthenticated, (req, res) => {
     const stockName = req.query.stock || 'Nvidia'; // Default to Nvidia
@@ -152,7 +155,7 @@ app.get('/api/chart-data', checkAuthenticated, (req, res) => {
         return res.status(400).json({ error: 'Invalid stock name' });
     }
     
-    const query = `SELECT Time, \`${stockName}\` as stockValue FROM stock ORDER BY Time ASC`;
+    const query = `SELECT Time, \`${stockName}\` as stockValue FROM stock ORDER BY STR_TO_DATE(CONCAT('2026-01-27 ', Time), '%Y-%m-%d %h:%i:%s %p') ASC`;
     console.log('Executing query:', query); // Debug log
     
     connection.query(query, (error, results) => {
@@ -183,7 +186,7 @@ app.get('/api/crypto-data', checkAuthenticated, (req, res) => {
         return res.status(400).json({ error: 'Invalid crypto name' });
     }
     
-    const query = `SELECT Time, \`${cryptoName}\` as cryptoValue FROM crypto_prices ORDER BY Time ASC`;
+    const query = `SELECT Time, \`${cryptoName}\` as cryptoValue FROM crypto_prices ORDER BY STR_TO_DATE(CONCAT('2026-01-27 ', Time), '%Y-%m-%d %H:%i') ASC`;
     console.log('Executing crypto query:', query);
     
     connection.query(query, (error, results) => {
@@ -223,7 +226,7 @@ app.get('/api/crypto-data', checkAuthenticated, (req, res) => {
 app.get('/api/multiline-stock-data', checkAuthenticated, (req, res) => {
     console.log('Multiline stock API called');
     
-    const query = 'SELECT Time, Nvidia, Tesla, Apple, DBS, Grab FROM stock ORDER BY Time ASC';
+    const query = 'SELECT Time, Nvidia, Tesla, Apple, DBS, Grab FROM stock ORDER BY STR_TO_DATE(CONCAT(\'2026-01-27 \', Time), \'%Y-%m-%d %h:%i:%s %p\') ASC';
     console.log('Executing multiline stock query:', query);
     
     connection.query(query, (error, results) => {
@@ -240,7 +243,7 @@ app.get('/api/multiline-stock-data', checkAuthenticated, (req, res) => {
 app.get('/api/multiline-crypto-data', checkAuthenticated, (req, res) => {
     console.log('Multiline crypto API called');
     
-    const query = 'SELECT Time, Bitcoin, Ethereum, Solana, Ripple, Cardano FROM crypto_prices ORDER BY Time ASC';
+    const query = 'SELECT Time, Bitcoin, Ethereum, Solana, Ripple, Cardano FROM crypto_prices ORDER BY STR_TO_DATE(CONCAT(\'2026-01-27 \', Time), \'%Y-%m-%d %H:%i\') ASC';
     console.log('Executing multiline crypto query:', query);
     
     connection.query(query, (error, results) => {

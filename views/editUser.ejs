@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --warning-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      --hover-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+      --border-radius: 20px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 30%, #90caf9 60%, #64b5f6 100%);
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Animated background elements */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+      animation: shimmer 4s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(200%) translateY(200%) rotate(45deg); }
+    }
+
+    .navbar {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    .navbar-brand {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .navbar-brand img {
+      margin-right: 10px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+    .nav-link {
+      font-weight: 500;
+      margin: 0 15px;
+      color: #2c3e50 !important;
+      border-radius: 20px;
+      padding: 8px 16px !important;
+    }
+    .nav-link:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+      transform: translateY(-1px);
+    }
+    
+    .edit-container {
+      width: 100%;
+      max-width: 700px;
+      position: relative;
+      z-index: 1;
+      margin-top: 100px;
+    }
+    
+    .edit-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 50px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    .edit-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-gradient);
+    }
+    
+    .edit-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--hover-shadow);
+    }
+    
+    .form-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .form-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    
+    .form-subtitle {
+      color: #64748b;
+      font-size: 1rem;
+      font-weight: 400;
+    }
+    
+    .form-floating {
+      margin-bottom: 25px;
+    }
+    
+    .form-floating > .form-control,
+    .form-floating > .form-select,
+    .form-control,
+    .form-select {
+      border: 2px solid #e2e8f0;
+      border-radius: 15px;
+      padding: 20px 15px 8px;
+      font-size: 16px;
+      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-floating > .form-control:focus,
+    .form-floating > .form-select:focus,
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      background: rgba(255, 255, 255, 1);
+    }
+    
+    .form-floating > label,
+    .form-label {
+      color: #64748b;
+      font-weight: 600;
+    }
+    
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .btn-custom {
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: var(--transition);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      padding: 15px 40px;
+    }
+    
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      border: none;
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      transition: var(--transition);
+      padding: 15px 40px;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+      color: white;
+    }
+    
+    .alert {
+      border: none;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      font-weight: 500;
+    }
+    
+    .alert-danger {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+      color: #dc2626;
+      border-left: 4px solid #dc2626;
+    }
+    
+    .alert-success {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1));
+      color: #16a34a;
+      border-left: 4px solid #16a34a;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .user-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--success-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+    }
+    
+    .user-icon i {
+      color: white;
+      font-size: 2rem;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .edit-container {
+        margin: 80px 15px 20px;
+      }
+      
+      .edit-card {
+        padding: 30px 25px;
+      }
+      
+      .form-title {
+        font-size: 1.7rem;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn-custom,
+      .btn-secondary {
+        width: 100%;
+      }
+    }
+  </style>
+  <title>Edit User - TrendHorizon</title>
+</head>
+<body>
+  <%- include('./partials/navbar.ejs') %>
+
+  <div class="edit-container">
+    <div class="edit-card">
+      <div class="form-header">
+        <div class="user-icon">
+          <i class="fas fa-user-edit"></i>
+        </div>
+        <h1 class="form-title">Edit User</h1>
+        <p class="form-subtitle">Update user information and preferences</p>
+      </div>
+
+      <!-- Display flash messages -->
+      <% if (messages.error && messages.error.length > 0) { %>
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <% messages.error.forEach(function(error) { %>
+            <%= error %><br>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <% if (messages.success && messages.success.length > 0) { %>
+        <div class="alert alert-success" role="alert">
+          <i class="fas fa-check-circle me-2"></i>
+          <% messages.success.forEach(function(success) { %>
+            <%= success %><br>
+          <% }); %>
+        </div>
+      <% } %>
+
+      <form action="/editUser/<%= editUser.id %>" method="POST">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="username" name="username" value="<%= editUser.username %>" placeholder="Username" required>
+              <label for="username"><i class="fas fa-at me-2"></i>Username</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="email" name="email" value="<%= editUser.email %>" placeholder="Email Address" required>
+              <label for="email"><i class="fas fa-envelope me-2"></i>Email Address</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-floating">
+          <textarea class="form-control" id="address" name="address" placeholder="Address" style="height: 100px;" required><%= editUser.address %></textarea>
+          <label for="address"><i class="fas fa-map-marker-alt me-2"></i>Address</label>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="tel" class="form-control" id="contact" name="contact" value="<%= editUser.contact %>" placeholder="Contact Number" required>
+              <label for="contact"><i class="fas fa-phone me-2"></i>Contact Number</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <select class="form-select" id="role" name="role" required>
+                <option value="">Select Role</option>
+                <option value="user" <%= editUser.role === 'user' ? 'selected' : '' %>>User</option>
+                <option value="admin" <%= editUser.role === 'admin' ? 'selected' : '' %>>Admin</option>
+              </select>
+              <label for="role"><i class="fas fa-shield-alt me-2"></i>Role</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-custom">
+            <i class="fas fa-save me-2"></i>
+            Update User
+          </button>
+          <a href="/users" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Users
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</body>
+</html>

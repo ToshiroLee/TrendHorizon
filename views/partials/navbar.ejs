@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img src="/images/logo.png" alt="TrendHorizon Logo"> TrendHorizon
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <!-- Trends Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Trends
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/investment">All Investment Types</a></li>
+                        <li><a class="dropdown-item" href="/investment/stocks">Stocks</a></li>
+                        <li><a class="dropdown-item" href="/investment/crypto">Crypto Currencies</a></li>
+                    </ul>
+                </li>
+                
+                <!-- Compare Trends Link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/chart">Compare Trends</a>
+                </li>
+
+                <!-- Users Dropdown (Admin Only) -->
+                <% if (user && user.role === "admin") { %>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
+                            Users
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/users">Manage Users</a></li>
+                            <li><a class="dropdown-item" href="/users/add">Add User</a></li>
+                        </ul>
+                    </li>
+                <% } %>
+                
+                <!-- Account Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Account
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
